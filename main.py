@@ -107,8 +107,6 @@ def init():
         account_dict[client_id] = DebitAccount(**account)
   return account_dict
 
-account_file = "account.yaml"
-accounts = init()
 
 @app.route("/api/v1/accounts", methods=["GET"])
 def read_accounts():
@@ -161,3 +159,7 @@ def create_account():
     response.status = 201
     
   return response
+
+
+account_file = "account.yaml"
+accounts = init()
