@@ -1,5 +1,6 @@
 import yaml
 from flask import Flask, abort, make_response, request
+from time import sleep
 
 app = Flask(__name__)
 
@@ -10,17 +11,31 @@ class WithdrawalBlocked(Exception):
   pass
 
 class CommonAccount:
-  def __init__(self,client_id, type, withdraw=False, amount=0):
+  def __init__(self,client_id, type, withdraw=True, amount=0):
     self.__client_id = client_id
     self.withdraw = withdraw
-    self.type = type
+    self._amount = amount
+    self.__type = type
+
+  def to_dict(self):
+    return {
+      "client_id": self.client_id,
+      "amount": self.amount,
+      "type": self.type,
+      "withdraw": self.withdraw
+    }
 
   @property
   def client_id(self):
     return self.__client_id
 
+  @property
+  def type(self):
+    return self.__type
+
+  @property
   def amount(self):
-    pass
+    return self._amount
 
   def transaction(self, substract, add):
     pass
@@ -28,64 +43,37 @@ class CommonAccount:
 class DebitAccount(CommonAccount):
   """This is a debit account class"""
 
-  def __init__(self, client_id, type, withdraw=False, amount=0):
-    self.__amount = amount
-    super().__init__(client_id, type, withdraw)
-   
-  @property
-  def amount(self):
-    return self.__amount
-
-  
-  def to_dict(self):
-    return {
-      "client_id": self.client_id,
-      "amount": self.amount,
-      "type": self.type,
-      "withdraw": self.withdraw
-    }
+  def __init__(self, client_id, type, withdraw=True, amount=0):
+    super().__init__(client_id, type, withdraw, amount)
 
   def transaction(self, substract=0, add=0):
-    trx = self.__amount
+    trx = self._amount
     if substract > 0:
       if not self.withdraw:
         raise WithdrawalBlocked("Withdrawal blocked. For this account")
-      trx = self.__amount - substract
+      trx = self._amount - substract
 
     if add > 0:
-      trx = self.__amount + add
+      trx = self._amount + add
    
     if trx < 0:
       raise TransactionError("Debit account cant be less than 0")
 
-    self.__amount = trx
+    self._amount = trx
 
 
 class CreditAccount(CommonAccount):
   """This is a credit account class"""
 
-  def __init__(self, client_id, type, withdraw=False, amount=0):
-    self.__amount = amount
-    super().__init__(client_id, type, withdraw)
-
-  @property
-  def amount(self):
-    return self.__amount
-
-  def to_dict(self):
-    return {
-      "client_id": self.client_id,
-      "amount": self.amount,
-      "type": self.type,
-      "withdraw": self.withdraw
-    }
+  def __init__(self, client_id, type, withdraw=True, amount=0):
+    super().__init__(client_id, type, withdraw, amount)
 
   def transaction(self, substract=0, add=0):
     if substract > 0:
-      self.__amount = self.__amount - substract
+      self._amount = self._amount - substract
 
     if add > 0:
-      self.__amount = self.__amount + add
+      self._amount = self._amount + add
 
 def read_accounts_file(account_file):
   with open(account_file, "r") as f:
@@ -106,7 +94,6 @@ def init():
       elif account["type"] == "debit":
         account_dict[client_id] = DebitAccount(**account)
   return account_dict
-
 
 @app.route("/api/v1/accounts", methods=["GET"])
 def read_accounts():
@@ -148,6 +135,7 @@ def create_account():
   response = make_response({"status": "error", "message": "Client already has an account"})
   response.status = 406 
   if account["client_id"] not in accounts.keys():
+    client_id = account["client_id"]
     if account["type"] == "credit":
       accounts[client_id] = CreditAccount(**account)
     elif account["type"] == "debit":
