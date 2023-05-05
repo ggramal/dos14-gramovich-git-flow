@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "dos14-gramovich-git-flow"
+name = "account"
 version = "0.1.0"
 description = ""
 authors = ["Gramovich Alexander <gramovich.alex@outlook.com>"]
