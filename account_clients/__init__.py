@@ -7,7 +7,7 @@ class AccountClient:
 
   @property
   def withdraw(self):
-    return slef.__withdraw
+    return self.__withdraw
 
   @withdraw.setter
   def withdraw(self, value):
