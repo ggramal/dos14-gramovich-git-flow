@@ -7,10 +7,10 @@
   #   ansible.builtin.debug:
   #     msg: Hello world
 
-   - name: Update repository
-     apt_repository:
-      repo: 'ppa:git-core/ppa'
-      state: present
+  # - name: Update repository
+  #   apt_repository:
+  #    repo: 'ppa:git-core/ppa'
+  #    state: present
    - name: Install Git
      apt:
       name: git
