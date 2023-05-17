@@ -1,18 +1,24 @@
-- name: My first play
+- name: SquidGame
   hosts: virtualmachines
   tasks:
-  # - name: Ping my hosts
-  #   ansible.builtin.ping:
-  # - name: Print message
-  #   ansible.builtin.debug:
-  #     msg: Hello world
-
-  # - name: Update repository
+  #- name: Update repository
   #   apt_repository:
   #    repo: 'ppa:git-core/ppa'
   #    state: present
+
    - name: Install Git
+     become: yes 
+     become_method: sudo
      apt:
-      name: git
-      state: present
-      update_cache: yes
+       name: git
+       state: present
+       update_cache: yes
+     vars:
+       ansible_user: account
+
+   - name: Clone a github repo
+     ansible.builtin.git:
+       repo: git@github.com:AndyTwelve/dos14-gramovich-git-flow.git
+       dest: /tmp/dos14-gramovich-git-flow
+       clone: yes
+       update: yes
