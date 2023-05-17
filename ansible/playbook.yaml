@@ -1,11 +1,12 @@
 - name: SquidGame
   hosts: virtualmachines
+  vars:
+    GIT_REPO: git@github.com:AndyTwelve/dos14-gramovich-git-flow.git
+    GIT_BRANCH: master
+    GIT_DEST_FOLDER: /tmp/dos14-gramovich-git-flow
+    ANSIBLE_USER: account
+  gather_facts: no
   tasks:
-  #- name: Update repository
-  #   apt_repository:
-  #    repo: 'ppa:git-core/ppa'
-  #    state: present
-
    - name: Install Git
      become: yes 
      become_method: sudo
@@ -13,12 +14,19 @@
        name: git
        state: present
        update_cache: yes
-     vars:
-       ansible_user: account
 
    - name: Clone a github repo
-     ansible.builtin.git:
-       repo: git@github.com:AndyTwelve/dos14-gramovich-git-flow.git
-       dest: /tmp/dos14-gramovich-git-flow
+     git:
+       repo: "{{ GIT_REPO }}"
+       version: "{{ GIT_BRANCH }}"
+       dest: "{{ GIT_DEST_FOLDER }}"
        clone: yes
        update: yes
+       accept_hostkey: yes 
+
+   - name: Install python
+     pre_tasks:
+     - name: install python
+       raw: 'cat < "{{ GIT_DEST_FOLDER }}"/ansible/python-install-script.sh'
+       args:
+         executable: /bin/bash
