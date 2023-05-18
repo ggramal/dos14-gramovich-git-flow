@@ -24,7 +24,7 @@
        update: yes
        accept_hostkey: yes 
 
-   - name: Install Python
-     ansible.builtin.raw: 'cat < "{{ GIT_DEST_FOLDER }}"/ansible/python-install-script.sh'
+   - name: Install Python3
+     ansible.builtin.raw: 'cat < /tmp/dos14-gramovich-git-flow/ansible/python-install-script.sh'
      args:
        executable: /bin/bash
