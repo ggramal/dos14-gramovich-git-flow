@@ -11,7 +11,6 @@
         - ca-certificates
         - curl
         - software-properties-common
-        - python3-pip
         - virtualenv
         - python3-setuptools
       state: latest
@@ -32,7 +31,3 @@
       name: docker-ce
       state: latest
       update_cache: true
-
-  - name: Install Docker Module for Python
-    pip:
-      name: docker
