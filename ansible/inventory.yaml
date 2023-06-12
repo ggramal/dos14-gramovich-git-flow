@@ -1,0 +1,7 @@
+virtualmachines:
+  hosts:
+    vm01:
+      ansible_host: 192.168.100.9
+      #ansible_host: 192.168.100.8
+  vars:
+    ansible_user:  account
