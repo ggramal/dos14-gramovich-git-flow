@@ -108,7 +108,7 @@ def read_accounts(account_type):
     response = make_response(
       {
         "status": "error",
-        "message": f"account type - {account_type}. Is a wrong account type. Must be one of {','.join(accounts.keys())}"
+        "message": f"account type - {account_type}. Is a wrong account type. Must be one of {','.join(all_accounts.keys())}"
       }
     )
     response.status = 404
@@ -124,7 +124,7 @@ def read_account(account_type, client_id):
     response = make_response(
       {
         "status": "error",
-        "message": f"account type - {account_type}. Is a wrong account type. Must be one of {','.join(accounts.keys())}"
+        "message": f"account type - {account_type}. Is a wrong account type. Must be one of {','.join(all_accounts.keys())}"
       }
     )
     response.status = 404
@@ -146,7 +146,7 @@ def transaction(account_type, client_id):
     response = make_response(
       {
         "status": "error",
-        "message": f"account type - {account_type}. Is a wrong account type. Must be one of {','.join(accounts.keys())}"
+        "message": f"account type - {account_type}. Is a wrong account type. Must be one of {','.join(all_accounts.keys())}"
       }
     )
     response.status = 404
@@ -190,6 +190,15 @@ def create_account(account_type):
   elif account_type == "debitaccounts":
     account["type"] = "debit"
     all_accounts[account_type][client_id] = DebitAccount(**account)
+  else:
+    response = make_response(
+      {
+        "status": "error",
+        "message": f"account type - {account_type}. Is a wrong account type. Must be one of {','.join(all_accounts.keys())}"
+      }
+    )
+    response.status = 404
+    return response
 
   write_accounts_file(account_file)
 
