@@ -1,3 +1,23 @@
+- amount: 50000
+  client_id: 8
+  type: credit
+  withdraw: true
+- amount: 100
+  client_id: 6
+  type: credit
+  withdraw: true
+- amount: 500000
+  client_id: 13
+  type: credit
+  withdraw: true
+- amount: 100000
+  client_id: 14
+  type: credit
+  withdraw: true
+- amount: 100
+  client_id: 15
+  type: credit
+  withdraw: true
 - amount: 9800
   client_id: 1
   type: debit
@@ -10,10 +30,6 @@
   client_id: 3
   type: debit
   withdraw: true
-- amount: 50000
-  client_id: 8
-  type: credit
-  withdraw: true
 - amount: 0
   client_id: 5
   type: debit
@@ -21,10 +37,6 @@
 - amount: 100000
   client_id: 9
   type: debit
-  withdraw: true
-- amount: 100
-  client_id: 6
-  type: credit
   withdraw: true
 - amount: 500000
   client_id: 4
@@ -45,12 +57,4 @@
 - amount: 1000
   client_id: 12
   type: debit
-  withdraw: true
-- amount: 500000
-  client_id: 13
-  type: credit
-  withdraw: true
-- amount: 100000
-  client_id: 14
-  type: credit
   withdraw: true
