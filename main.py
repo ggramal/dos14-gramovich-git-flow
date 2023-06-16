@@ -104,6 +104,7 @@ def init():
 def read_accounts(account_type):
   try:
     accounts = all_accounts[account_type]
+    response = [account.to_dict() for client_id, account in accounts.items()]
   except KeyError as ek:
     response = make_response(
       {
@@ -112,14 +113,18 @@ def read_accounts(account_type):
       }
     )
     response.status = 404
-    return response
 
-  return [account.to_dict() for client_id, account in accounts.items()]
+  return response
 
 @app.route("/api/v1/<string:account_type>/<int:client_id>", methods=["GET"])
 def read_account(account_type, client_id):
   try:
     accounts = all_accounts[account_type]
+    try:
+      response = make_response(accounts[client_id].to_dict())
+    except KeyError:
+      response = make_response({"status": "error", "message": "Client not found"})
+      response.status = 404
   except KeyError as ek:
     response = make_response(
       {
@@ -127,13 +132,6 @@ def read_account(account_type, client_id):
         "message": f"account type - {account_type}. Is a wrong account type. Must be one of {','.join(all_accounts.keys())}"
       }
     )
-    response.status = 404
-    return response
-
-  try:
-    response = make_response(accounts[client_id].to_dict())
-  except KeyError:
-    response = make_response({"status": "error", "message": "Client not found"})
     response.status = 404
 
   return response
@@ -142,6 +140,21 @@ def read_account(account_type, client_id):
 def transaction(account_type, client_id):
   try:
     accounts = all_accounts[account_type]
+    r = request.json
+    try:
+      account = accounts[client_id]
+      account.transaction(**r)
+      write_accounts_file(account_file)
+      response = make_response(account.to_dict())
+    except KeyError as ek:
+      response = make_response({"status": "error", "message": "Client not found"})
+      response.status = 404
+    except TransactionError as e:
+      response = make_response({"status": "error", "message": f"{e}"})
+      response.status = 400
+    except WithdrawalBlocked as e:
+      response = make_response({"status": "error", "message": f"{e}"})
+      response.status = 403
   except KeyError as ek:
     response = make_response(
       {
@@ -150,23 +163,6 @@ def transaction(account_type, client_id):
       }
     )
     response.status = 404
-    return response
-
-  r = request.json
-  try:
-    account = accounts[client_id]
-    account.transaction(**r)
-    write_accounts_file(account_file)
-    response = make_response(account.to_dict())
-  except KeyError as ek:
-    response = make_response({"status": "error", "message": "Client not found"})
-    response.status = 404
-  except TransactionError as e:
-    response = make_response({"status": "error", "message": f"{e}"})
-    response.status = 400
-  except WithdrawalBlocked as e:
-    response = make_response({"status": "error", "message": f"{e}"})
-    response.status = 403
 
   return response
 
