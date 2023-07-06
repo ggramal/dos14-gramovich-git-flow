@@ -10,6 +10,8 @@ packages = [{include = "account_clients"}]
 python = "^3.11"
 pyyaml = "^6.0"
 flask  = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
 
 [tool.poetry.group.dev]
 optional = true
