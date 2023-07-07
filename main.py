@@ -1,4 +1,5 @@
 import yaml
+import config
 from flask import Flask, abort, make_response, request
 from time import sleep
 from sqlalchemy import Column, String, Integer, DateTime, Boolean, Float
@@ -8,7 +9,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 engine = create_engine(
-    f"postgresql://postgres:12345678@localhost:5432/omegabank",
+    f"postgresql://{config.PG_USER}:{config.PG_PASSWORD}@{config.PG_HOST}:{config.PG_PORT}/{config.PG_DATABASE}",
 )
 
 Base = declarative_base()
