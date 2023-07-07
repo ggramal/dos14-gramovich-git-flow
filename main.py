@@ -105,7 +105,7 @@ def write_accounts(account_file):
   }
   accs = [account for client_id, account in accounts.items()]
   try:
-      session.add_all(accs)
+      session.add(accs)
       session.commit()
   except IntegrityError as err:
       session.rollback()
