@@ -1,6 +1,18 @@
 import yaml
+import config
 from flask import Flask, abort, make_response, request
 from time import sleep
+from sqlalchemy import Column, String, Integer, DateTime, Boolean, Float
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+engine = create_engine(
+    f"postgresql://{config.PG_USER}:{config.PG_PASSWORD}@{config.PG_HOST}:{config.PG_PORT}/{config.PG_DATABASE}",
+)
+
+Base = declarative_base()
 
 app = Flask(__name__)
 
@@ -10,12 +22,19 @@ class TransactionError(Exception):
 class WithdrawalBlocked(Exception):
   pass
 
-class CommonAccount:
+class CommonAccount(Base):
+  __tablename__ = "accounts"
+
+  client_id = Column(Integer, primary_key=True)
+  withdraw = Column(Boolean)
+  amount = Column(Float)
+  type = Column(String)
+
   def __init__(self,client_id, type, withdraw=True, amount=0):
-    self.__client_id = client_id
+    self.client_id = client_id
     self.withdraw = withdraw
-    self._amount = amount
-    self.__type = type
+    self.amount = amount
+    self.type = type
 
   def to_dict(self):
     return {
@@ -24,18 +43,6 @@ class CommonAccount:
       "type": self.type,
       "withdraw": self.withdraw
     }
-
-  @property
-  def client_id(self):
-    return self.__client_id
-
-  @property
-  def type(self):
-    return self.__type
-
-  @property
-  def amount(self):
-    return self._amount
 
   def transaction(self, substract, add):
     pass
@@ -47,19 +54,19 @@ class DebitAccount(CommonAccount):
     super().__init__(client_id, type, withdraw, amount)
 
   def transaction(self, substract=0, add=0):
-    trx = self._amount
+    trx = self.amount
     if substract > 0:
       if not self.withdraw:
         raise WithdrawalBlocked("Withdrawal blocked. For this account")
-      trx = self._amount - substract
+      trx = self.amount - substract
 
     if add > 0:
-      trx = self._amount + add
+      trx = self.amount + add
 
     if trx < 0:
       raise TransactionError("Debit account cant be less than 0")
 
-    self._amount = trx
+    self.amount = trx
 
 
 class CreditAccount(CommonAccount):
@@ -70,28 +77,45 @@ class CreditAccount(CommonAccount):
 
   def transaction(self, substract=0, add=0):
     if substract > 0:
-      self._amount = self._amount - substract
+      self.amount = self.amount - substract
 
     if add > 0:
-      self._amount = self._amount + add
+      self.amount = self.amount + add
 
-def read_accounts_file(account_file):
-  with open(account_file, "r") as f:
-    return yaml.safe_load(f)
+def read_accounts(account_file):
+  accounts = session.query(CommonAccount).all()
+  if not accounts:
+    with open(account_file, "r") as f:
+      accounts_dict = yaml.safe_load(f)
+    for acc in accounts_dict:
+      accounts.append(CommonAccount(**acc))
+    try:
+        session.add_all(accounts)
+        session.commit()
+    except IntegrityError as err:
+        session.rollback()
+  return [acc.to_dict() for acc in accounts]
 
-def write_accounts_file(account_file):
+
+
+
+def write_accounts(account_file):
   accounts = {
     **all_accounts["creditaccounts"],
     **all_accounts["debitaccounts"]
   }
-  accs = [account.to_dict() for client_id, account in accounts.items()]
-  with open(account_file,"w") as f:
-    yaml.dump(accs, f, allow_unicode=True)
+  accs = [account for client_id, account in accounts.items()]
+  try:
+      session.add(accs)
+      session.commit()
+  except IntegrityError as err:
+      session.rollback()
 
 def init():
-  accounts = read_accounts_file(account_file)
+  accounts = read_accounts(account_file)
   debit_account_dict = {}
   credit_account_dict = {}
+
   for account in accounts:
       client_id = int(account["client_id"])
       if account["type"] == "credit":
@@ -101,7 +125,7 @@ def init():
   return debit_account_dict, credit_account_dict
 
 @app.route("/api/v1/<string:account_type>", methods=["GET"])
-def read_accounts(account_type):
+def read_accs(account_type):
   try:
     accounts = all_accounts[account_type]
     response = [account.to_dict() for client_id, account in accounts.items()]
@@ -117,7 +141,7 @@ def read_accounts(account_type):
   return response
 
 @app.route("/api/v1/<string:account_type>/<int:client_id>", methods=["GET"])
-def read_account(account_type, client_id):
+def read_acc(account_type, client_id):
   try:
     accounts = all_accounts[account_type]
     try:
@@ -144,7 +168,7 @@ def transaction(account_type, client_id):
     try:
       account = accounts[client_id]
       account.transaction(**r)
-      write_accounts_file(account_file)
+      write_accounts(account_file)
       response = make_response(account.to_dict())
     except KeyError as ek:
       response = make_response({"status": "error", "message": "Client not found"})
@@ -167,7 +191,7 @@ def transaction(account_type, client_id):
   return response
 
 @app.route("/api/v1/<string:account_type>", methods=["PUT"])
-def create_account(account_type):
+def create_acc(account_type):
   accounts = {
     **all_accounts["creditaccounts"],
     **all_accounts["debitaccounts"]
@@ -196,7 +220,7 @@ def create_account(account_type):
     response.status = 404
     return response
 
-  write_accounts_file(account_file)
+  write_accounts(account_file)
 
   response = make_response({"status": "ok", "message": f"Account for {client_id} created"})
   response.status = 201
@@ -204,8 +228,14 @@ def create_account(account_type):
   return response
 
 
+
+Session = sessionmaker(bind=engine)
+session = Session()
+Base.metadata.create_all(engine)
+
 all_accounts = {}
 account_file = "account.yaml"
+
 debit_accounts, credit_accounts = init()
 all_accounts["debitaccounts"] = debit_accounts
 all_accounts["creditaccounts"] = credit_accounts
