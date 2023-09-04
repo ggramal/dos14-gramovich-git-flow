@@ -7,10 +7,10 @@ pipeline {
     stages {
         stage('Test') {
             environment {
-              ABC = sh(script: "cat main.py", returnStdout: true).split("\n")[0]
+              ABC = sh(script: "cat main.py", returnStdout: true).split("\n")
             }
             steps {
-              sh 'echo ${ABC}'
+              echo '${ABC[0]}'
 	    }
         }
         stage('Build') {
