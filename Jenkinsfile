@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                echo '$ABC'
+                sh 'echo $ABC'
             }
         }
         stage('Build') {
