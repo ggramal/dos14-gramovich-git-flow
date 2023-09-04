@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-      CBA  = "export H='123'"
+      CBA  = "123"
     }
 
     stages {
