@@ -10,7 +10,10 @@ pipeline {
               ABC = sh(script: "cat main.py", returnStdout: true).split("\n")
             }
             steps {
-              echo '${ABC[0]}'
+              script {
+	        def hui = ABC[0]
+	      }
+	      echo hui
 	    }
         }
         stage('Build') {
