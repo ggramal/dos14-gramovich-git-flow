@@ -6,6 +6,9 @@ pipeline {
 
     stages {
         stage('Test') {
+            environment {
+              ABC = sh(script: "echo World") 
+            }
             steps {
                 sh 'echo $ABC'
             }
