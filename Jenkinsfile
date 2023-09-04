@@ -9,14 +9,14 @@ pipeline {
             environment {
               ABC = sh(script: "cat main.py", returnStdout: true).split("\n")
             }
-            steps {
 	      try {
-                sh 'echo ${ABC[0]}'
+                steps {
+                  sh 'echo ${ABC[0]}'
+	        }
 	      }
 	      catch (Exception e) {
 	        sh 'echo Error'
 	      }
-	    }
         }
         stage('Build') {
             steps {
