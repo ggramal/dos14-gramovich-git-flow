@@ -1,11 +1,13 @@
 pipeline {
     agent any
+    environment {
+      ABC = "Hello"
+    }
 
     stages {
-
         stage('Test') {
             steps {
-                echo 'Testing..'
+                echo '$ABC'
             }
         }
         stage('Build') {
