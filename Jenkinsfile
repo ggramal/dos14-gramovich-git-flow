@@ -11,8 +11,6 @@ pipeline {
             }
             steps {
                 sh 'echo $ABC'
-            }
-            steps {
                 sh 'echo $CBA'
             }
         }
