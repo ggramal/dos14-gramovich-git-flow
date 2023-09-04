@@ -6,12 +6,14 @@ pipeline {
 
     stages {
         stage('Test') {
-            environment {
-              ABC = sh(script: "cat file", returnStdout: true).split("\n")
-            }
-            steps {
-                sh 'echo ${ABC[0]} $CBA'
-            }
+	    catchError(buildResult: null) {
+              environment {
+                ABC = sh(script: "cat file", returnStdout: true).split("\n")
+              }
+              steps {
+                  sh 'echo ${ABC[0]} $CBA'
+              }
+	    }
         }
         stage('Build') {
             steps {
