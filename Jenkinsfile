@@ -1,23 +1,19 @@
 pipeline {
     agent any
     environment {
-      CBA  = "Hello"
+      CBA  = "export H='123'"
     }
 
     stages {
         stage('Test') {
             environment {
-              ABC = sh(script: "echo World", returnStdout: true) 
+              ABC = sh(script: "cat file", returnStdout: true).split("\n")
             }
             steps {
-                sh 'echo $ABC $CBA'
+                sh 'echo ${ABC[0]} $CBA'
             }
         }
         stage('Build') {
-	    when {
-	      branch "master"
-	    }
-
             steps {
                 sh 'ls -lrt'
             }
@@ -25,6 +21,9 @@ pipeline {
         stage('Deploy') {
 	    when {
 	      branch "master"
+	    }
+	    environment {
+	      ANSIBLE_PIPELINING = "True" 
 	    }
             steps {
                 echo 'Deploying.......'
