@@ -19,13 +19,6 @@ pipeline {
             }
         }
         stage('Deploy') {
-	    agent {
-	      label: 'docker'
-	      docker {
-	        image: ansible:latest
-
-	      }
-	    }
 	    when {
 	      branch "master"
 	    }
