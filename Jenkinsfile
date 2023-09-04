@@ -12,6 +12,7 @@ pipeline {
             steps {
 	      try {
                 sh 'echo ${ABC[0]}'
+	      }
 	      catch (Exception e) {
 	        sh 'echo Error'
 	      }
