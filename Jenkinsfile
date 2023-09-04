@@ -10,12 +10,16 @@ pipeline {
               ABC = sh(script: "cat main.py", returnStdout: true).split("\n")
             }
             steps {
-              sh 'echo ${ABC[0]}'
+	      try {
+                sh 'echo ${ABC[0]}'
+	      catch (Exception e) {
+	        sh 'echo Error'
+	      }
 	    }
         }
         stage('Build') {
             steps {
-                sh 'cat file'
+                sh 'echo Building'
             }
         }
         stage('Deploy') {
