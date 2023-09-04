@@ -10,8 +10,7 @@ pipeline {
               ABC = sh(script: "echo World", returnStdout: true) 
             }
             steps {
-                sh 'echo $ABC'
-                sh 'echo $CBA'
+                sh 'echo $ABC $CBA'
             }
         }
         stage('Build') {
