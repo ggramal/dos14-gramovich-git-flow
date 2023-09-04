@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Test') {
             environment {
-              ABC = sh(script: "cat main.py", returnStdout: true).split("\n")
+              ABC = sh(script: "cat main.py", returnStdout: true).split("\n")[0]
             }
             steps {
               sh 'echo ${ABC}'
@@ -19,6 +19,13 @@ pipeline {
             }
         }
         stage('Deploy') {
+	    agent {
+	      label: 'docker'
+	      docker {
+	        image: ansible:latest
+
+	      }
+	    }
 	    when {
 	      branch "master"
 	    }
@@ -26,7 +33,7 @@ pipeline {
 	      ANSIBLE_PIPELINING = "True" 
 	    }
             steps {
-                echo 'Deploying.......'
+	      sh "cd ansible && ansible-playbook -i 'ip' playbook.yaml"
             }
         }
     }
