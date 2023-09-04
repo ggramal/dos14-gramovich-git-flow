@@ -12,8 +12,8 @@ pipeline {
             steps {
               script {
 	        def hui = ABC[0]
+		println hui
 	      }
-	      echo hui
 	    }
         }
         stage('Build') {
