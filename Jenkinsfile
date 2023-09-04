@@ -10,14 +10,12 @@ pipeline {
               ABC = sh(script: "cat main.py", returnStdout: true).split("\n")
             }
             steps {
-	      catchError(buildResult: null) {
-                sh 'cat file'
-              }
+              sh 'echo ${ABC[0]}'
 	    }
         }
         stage('Build') {
             steps {
-                sh 'ls -lrt'
+                sh 'cat file'
             }
         }
         stage('Deploy') {
@@ -31,5 +29,11 @@ pipeline {
                 echo 'Deploying.......'
             }
         }
+    }
+
+    post {
+      failure {
+        sh "echo I send message"
+      }
     }
 }
