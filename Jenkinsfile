@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-      ABC = "Hello"
+      CBA  = "Hello"
     }
 
     stages {
@@ -11,6 +11,9 @@ pipeline {
             }
             steps {
                 sh 'echo $ABC'
+            }
+            steps {
+                sh 'echo $CBA'
             }
         }
         stage('Build') {
