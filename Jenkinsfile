@@ -7,12 +7,12 @@ pipeline {
     stages {
         stage('Test') {
             environment {
-              ABC = sh(script: "cat main.py", returnStdout: true).split("\n")
+              ABC = sh(script: "cat main.py", returnStdout: true)
             }
             steps {
               script {
-	        def hui = ABC[0]
-		println hui
+	        def test = ABC.split("\n")[0]
+		println test
 	      }
 	    }
         }
