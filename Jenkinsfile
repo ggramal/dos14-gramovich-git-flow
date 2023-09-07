@@ -22,7 +22,7 @@ pipeline {
 	      anyOf {
 	        branch "master"
 		branch "jenkins"
-		branch pattern: "feature-*" comparator: "GLOB"
+		branch pattern: "feature-*", comparator: "GLOB"
 	      }
 	    }
             steps {
