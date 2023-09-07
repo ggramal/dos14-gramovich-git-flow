@@ -19,14 +19,10 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'echo Building'
+	      script {
+	        println "Hello, World!"
+	      }
             }
         }
-    }
-
-    post {
-      failure {
-        sh "echo I send message"
-      }
     }
 }
