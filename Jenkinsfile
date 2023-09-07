@@ -26,8 +26,7 @@ pipeline {
             steps {
                 script {
 		  println env
-		  println env.properties
-		  println env.getEnvironment()
+		  echo sh(returnStdout: true, script: 'env')
 		}
             }
         }
