@@ -27,7 +27,7 @@ pipeline {
 	    }
             steps {
 	      script {
-	        println sh(script: "env", returnStdout: true)
+	        println env.GIT_COMMIT
 	      }
             }
         }
