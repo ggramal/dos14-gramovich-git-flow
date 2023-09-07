@@ -27,7 +27,12 @@ pipeline {
 	    }
             steps {
 	      script {
-	        println ABC.split("\n")[0]
+	        try {
+	          println ABC.split("\n")[0]
+		}
+		catch (Exception e) {
+		  println "something went wrong. ${e}"
+		}
 	      }
             }
         }
