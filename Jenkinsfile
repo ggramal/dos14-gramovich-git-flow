@@ -1,16 +1,18 @@
 pipeline {
-    agent {
-      docker {
-        image 'python:3.11.3-buster'
-	args '-u 0'
-      }
-    }
+    agent any
     environment {
       ABC = sh(script: "cat main.py", returnStdout: true)
     }
 
     stages {
         stage('Lint') {
+            agent {
+              docker {
+                image 'python:3.11.3-buster'
+                args '-u 0'
+              }
+            }
+
             steps {
 	      sh "pip install poetry"
 	      sh "poetry install --with dev"
@@ -27,7 +29,9 @@ pipeline {
 	    }
             steps {
 	      script {
-	        docker.build "gramal/dos14-account:${env.GIT_COMMIT}"
+	        def image = docker.build "gramal/dos14-account:${env.GIT_COMMIT}"
+                image.push()
+
 	      }
             }
         }
