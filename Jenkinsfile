@@ -25,8 +25,8 @@ pipeline {
 	    }
             steps {
                 script {
-		  println env
-		  echo sh(returnStdout: true, script: 'env')
+		  def image = docker.build("gramal/dos14-account:${env.GIT_COMMIT}")
+                  image.push()
 		}
             }
         }
