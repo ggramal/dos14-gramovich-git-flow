@@ -18,6 +18,9 @@ pipeline {
 	    }
         }
         stage('Build') {
+	    when {
+	      branch "master"
+	    }
             steps {
 	      script {
 	        def numbers = [1, 2, 3, 4, 5]
