@@ -26,7 +26,9 @@ pipeline {
             steps {
                 script {
 		  def image = docker.build("gramal/dos14-account:${env.GIT_COMMIT}")
-                  image.push()
+                  docker.withRegistry('', 'dockerhub-gramal') {
+                    image.push()
+                  }
 		}
             }
         }
