@@ -27,7 +27,7 @@ pipeline {
 	    }
             steps {
 	      script {
-	        println env.getEnvironment()
+	        println sh(script: "env", returnStdout: true)
 	      }
             }
         }
