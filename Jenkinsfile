@@ -27,7 +27,7 @@ pipeline {
 	    }
             steps {
 	      script {
-	        println env.GIT_COMMIT
+	        docker.build "gramal/dos14-account:${env.GIT_COMMIT}"
 	      }
             }
         }
