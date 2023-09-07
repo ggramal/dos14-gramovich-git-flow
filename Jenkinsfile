@@ -12,7 +12,12 @@ pipeline {
           args '-u 0'
         }
       }
-
+      when {
+        anyOf {
+          branch "master"
+          branch pattern: "feature-*", comparator: "GLOB"
+        }
+      }
       steps {
         sh "pip install poetry"
         sh "poetry install --with dev"
@@ -23,8 +28,6 @@ pipeline {
       when {
         anyOf {
           branch "master"
-          branch "jenkins"
-          branch pattern: "feature-*", comparator: "GLOB"
         }
       }
       steps {
