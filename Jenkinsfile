@@ -12,7 +12,8 @@ pipeline {
               ABC = sh(script: "cat main.py", returnStdout: true)
             }
             steps {
-	      sh "ls -lrt"
+	      sh "pip install poetry",
+	      sh "poetry install --with dev"
 	    }
         }
         stage('Build') {
