@@ -22,7 +22,9 @@ pipeline {
 	      }
 	    }
             steps {
-                sh 'echo Building'
+                script {
+		  docker.build("gramal/dos14-account:${env.GIT_COMMIT}")
+		}
             }
         }
         stage('Deploy') {
