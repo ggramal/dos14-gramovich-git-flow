@@ -1,6 +1,9 @@
 pipeline {
     agent {
-      docker { image 'python:3.11.3-buster' }
+      docker {
+        image 'python:3.11.3-buster'
+	args '-u root'
+      }
     }
     environment {
       CBA  = "123"
