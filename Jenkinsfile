@@ -19,12 +19,15 @@ pipeline {
         }
         stage('Build') {
 	    when {
-	      branch "master"
+	      anyOf {
+	        branch "master"
+		branch "jenkins"
+		branch pattern: "feature-*" comparator: "GLOB"
+	      }
 	    }
             steps {
 	      script {
-	        def numbers = [1, 2, 3, 4, 5]
-		numbers.each { println it }
+	        println ABC.split("\n")[0]
 	      }
             }
         }
