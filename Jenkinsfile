@@ -26,7 +26,8 @@ pipeline {
             steps {
                 script {
 		  println env
-		  println a.properties
+		  println env.properties
+		  println env.getEnvironment()
 		}
             }
         }
