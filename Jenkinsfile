@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+      docker {
+        image 'python:3.11.3-buster'
+      }
+    }
     environment {
       CBA  = "123"
     }
@@ -10,10 +14,7 @@ pipeline {
               ABC = sh(script: "cat main.py", returnStdout: true)
             }
             steps {
-              script {
-	        def test = ABC.split("\n")[0]
-		println test
-	      }
+	      sh "ls -lrt"
 	    }
         }
         stage('Build') {
