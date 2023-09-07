@@ -5,15 +5,9 @@ pipeline {
 	args '-u root'
       }
     }
-    environment {
-      CBA  = "123"
-    }
 
     stages {
-        stage('Test') {
-            environment {
-              ABC = sh(script: "cat main.py", returnStdout: true)
-            }
+        stage('Lint') {
             steps {
 	      sh "pip install poetry"
 	      sh "poetry install --with dev"
@@ -21,6 +15,12 @@ pipeline {
 	    }
         }
         stage('Build') {
+	    when {
+	      anyOf {
+	        branch "master"
+		branch "jenkins-pre-lesson"
+	      }
+	    }
             steps {
                 sh 'echo Building'
             }
