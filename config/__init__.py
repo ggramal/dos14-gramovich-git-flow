@@ -6,13 +6,7 @@ class ConfigException(Exception):
 
 
 def check_config():
-    if not (
-        PG_DATABASE
-        and PG_USER
-        and PG_PASSWORD
-        and PG_PORT
-        and PG_HOST
-    ):
+    if not (PG_DATABASE and PG_USER and PG_PASSWORD and PG_PORT and PG_HOST):
         raise ConfigException(
             """
             PG_DATABASE
