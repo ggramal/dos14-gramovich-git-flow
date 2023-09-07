@@ -27,7 +27,7 @@ pipeline {
 	    }
             steps {
 	      script {
-	        println ABC.split("\n")[0]
+	        println env
 	      }
             }
         }
