@@ -1,13 +1,15 @@
 pipeline {
-    agent {
-      docker {
-        image 'python:3.11.3-buster'
-	args '-u root'
-      }
-    }
+    agent any
 
     stages {
         stage('Lint') {
+            agent {
+              docker {
+                image 'python:3.11.3-buster'
+                args '-u root'
+              }
+            }
+
             steps {
 	      sh "pip install poetry"
 	      sh "poetry install --with dev"
