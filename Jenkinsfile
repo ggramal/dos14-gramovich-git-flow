@@ -26,6 +26,8 @@ pipeline {
             steps {
                 script {
 		  println env
+		  println env.dump()
+		  println a.properties
 		}
             }
         }
