@@ -1,7 +1,5 @@
 pipeline {
-  agent {
-    label 'test'
-  }
+  agent any
   environment {
     ABC = sh(script: "cat main.py", returnStdout: true)
   }
@@ -10,7 +8,6 @@ pipeline {
     stage('Lint') {
       agent {
         docker {
-	  label 'test'
           image 'python:3.11.3-buster'
           args '-u 0'
         }
