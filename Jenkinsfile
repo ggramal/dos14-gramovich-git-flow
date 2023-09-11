@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+    label 'test'
+  }
   environment {
     ABC = sh(script: "cat main.py", returnStdout: true)
   }
