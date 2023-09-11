@@ -9,8 +9,8 @@ pipeline {
   stages {
     stage('Lint') {
       agent {
-	label 'test'
         docker {
+	  label 'test'
           image 'python:3.11.3-buster'
           args '-u 0'
         }
