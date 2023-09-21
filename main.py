@@ -105,11 +105,12 @@ def read_accounts(account_file):
 def write_accounts(account_file):
     accounts = {**all_accounts["creditaccounts"], **all_accounts["debitaccounts"]}
     accs = [account for client_id, account in accounts.items()]
-    try:
-        session.add(accs)
-        session.commit()
-    except IntegrityError as err:
-        session.rollback()
+    for acc in accs:
+        try:
+            session.add(acc)
+            session.commit()
+        except IntegrityError as err:
+            session.rollback()
 
 
 def init():
