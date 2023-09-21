@@ -1,7 +1,6 @@
 pipeline {
-  agent any
-  environment {
-    ABC = sh(script: "cat main.py", returnStdout: true)
+  agent {
+    label 'ec2-fleet'
   }
 
   stages {
@@ -9,6 +8,7 @@ pipeline {
       agent {
         docker {
           image 'python:3.11.3-buster'
+          label 'ec2-fleet'
           args '-u 0'
         }
       }
