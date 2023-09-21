@@ -14,4 +14,4 @@ WORKDIR /app
 RUN poetry install
 
 ENTRYPOINT ["poetry", "run"]
-CMD ["python", "main.py"]
+CMD ["flask", "--run", "main"]
