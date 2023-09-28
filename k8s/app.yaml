@@ -46,42 +46,62 @@ data:
     	}
     }
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: account
+  labels:
+    app: account
+    bank: ivanoff
+    env: prd
 spec:
-  containers:
-  - name: nginx
-    image: nginx:1.25.2
-    ports:
-    - containerPort: 80
-      name: http
-      protocol: TCP
-    volumeMounts:
-      - name: nginx-config
-        mountPath: /etc/nginx
-  - name: account
-    image: gramal/dos14-account:48b2309be223c7c92dc8bc579587dbe6b17145ae
-    env:
-    - name: PG_DATABASE
-      value: postgres
-    - name: PG_USER
-      valueFrom:
-        secretKeyRef:
-          key: username
-          name: ivanoff-db-creds
-    - name: PG_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          key: password
-          name: ivanoff-db-creds
-    - name: PG_HOST
-      value: rds-ivanoff-tf.c0whq4jiugzq.eu-north-1.rds.amazonaws.com
-    - name: PG_PORT
-      value: "5432"
-  volumes:
-  - configMap:
-      name: account-nginx-config
-      defaultMode: 420
-    name: nginx-config
+  replicas: 3
+  selector:
+    matchLabels:
+      app: account
+      bank: ivanoff
+      env: prd
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+  template:
+    metadata:
+      labels:
+        app: account
+        bank: ivanoff
+        env: prd
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25.0
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx
+      - name: account
+        image: gramal/dos14-account:571ab942282693e7839e0d4d2b4533eae1410115
+        env:
+        - name: PG_DATABASE
+          value: postgres
+        - name: PG_USER
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: ivanoff-db-creds
+        - name: PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: ivanoff-db-creds
+        - name: PG_HOST
+          value: rds-ivanoff-tf.c0whq4jiugzq.eu-north-1.rds.amazonaws.com
+        - name: PG_PORT
+          value: "5432"
+      volumes:
+      - configMap:
+          name: account-nginx-config
+        name: nginx-config
