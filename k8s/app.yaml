@@ -1,3 +1,67 @@
+#apiVersion: v1
+#kind: Pod
+#metadata:
+#  name: test
+#spec:
+#  containers:
+#    - name: test
+#      image: ubuntu
+#      command:
+#      - sleep
+#      - "1000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: account
+    bank: ivanoff
+    env: prd
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-account-db
+  labels:
+    app: account
+    bank: ivanoff
+    env: prd
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: psql
+          image: postgres
+          command:
+            - psql
+            - "-c"
+            - "CREATE DATABASE account;"
+          env:
+            - name: PGHOST
+              value: rds-ivanoff-tf.c0whq4jiugzq.eu-north-1.rds.amazonaws.com
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: "postgres"
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: ivanoff-db-creds
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: ivanoff-db-creds
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -55,7 +119,7 @@ metadata:
     bank: ivanoff
     env: prd
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: account
@@ -86,7 +150,7 @@ spec:
         image: gramal/dos14-account:571ab942282693e7839e0d4d2b4533eae1410115
         env:
         - name: PG_DATABASE
-          value: postgres
+          value: account
         - name: PG_USER
           valueFrom:
             secretKeyRef:
